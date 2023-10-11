@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\GroupMember;
+use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -15,4 +17,8 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('chat.{conversation_id}', function(User $user, int $conversation_id) {
+    return GroupMember::select('id')->where('conversation_id', $conversation_id)->get()->contains($user->id);
 });
