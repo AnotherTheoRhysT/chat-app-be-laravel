@@ -54,7 +54,9 @@ class ConversationController extends Controller
             ->whereHas('groupMembers', function(Builder $query) use (&$request) {
                 $query->where('user_id', $request->user()->id);
             })
+            ->orderByDesc('last_message_timestamp')
             ->with('groupMembers.user')
+            // ->ddRawSql();
             ->get()
             ->map(function (Conversation $conversation) use (&$request) {
                 $conversationName = ($conversation->conversation_name !== NULL) 

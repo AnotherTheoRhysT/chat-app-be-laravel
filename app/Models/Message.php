@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use function Illuminate\Events\queueable;
 
 class Message extends Model
 {
@@ -21,6 +22,18 @@ class Message extends Model
         'user_id',
         'conversation_id',
     ];
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::created(queueable(function (Message $message) {
+            $convo = Conversation::find($message->conversation_id);
+            $convo->last_message_timestamp = new \DateTime();
+            $convo->save();
+        }));
+    }
 
     const CREATED_AT = 'sent_timestamp';
     const UPDATED_AT = NULL;
