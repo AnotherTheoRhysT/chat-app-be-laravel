@@ -20,5 +20,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('chat.{conversation_id}', function(User $user, int $conversation_id) {
-    return GroupMember::select('id')->where('conversation_id', $conversation_id)->get()->contains($user->id);
+    return GroupMember::where('conversation_id', $conversation_id)
+        ->where('user_id', $user->id)
+        ->first() !== null;
 });
