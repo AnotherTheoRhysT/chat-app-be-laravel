@@ -5,6 +5,8 @@ use App\Http\Controllers\ConversationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Models\GroupMember;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,9 +39,14 @@ Route::middleware(['auth:sanctum'])->group(function() {
     });
 });
 
-Route::get('/test', function(Request $req) : Illuminate\Http\JsonResponse {
-    dd(explode(' ', ''));
-    return response()->json([
-        'jakolera ka' => true
-    ]);
-});
+Route::get('/test/{conversation_id}', function(Request $req, int $conversation_id) {
+    // return response()->json([
+    //     'user' => $req->user(),
+    //     'convo_id' => $conversation_id
+    // ]);
+    $q = GroupMember::where('conversation_id', $conversation_id)
+        ->where('user_id', $req->user()->id)
+        ->first();
+    // select('id')->
+    dd($q !== null);
+})->middleware(['auth:sanctum']);
